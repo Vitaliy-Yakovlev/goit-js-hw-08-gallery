@@ -1,45 +1,20 @@
 import linkImages from './gallery-items.js';
 
-console.log(linkImages);
-
 const refs = {
-  listGallery: document.querySelector('.js-gallery'),
-  divLightBox: document.querySelector('.js-lightbox'),
-  divLightBoxOverlay: document.querySelector('.lightbox__overlay'),
-  divLightBoxContent: document.querySelector('.lightbox__content'),
-  imgLightbox: document.querySelector('.lightbox__image'),
+  ulGallery: document.querySelector('.js-gallery'),
+  divModal: document.querySelector('.js-lightbox'),
+  divContent: document.querySelector('.lightbox__content'),
+  imgOriginal: document.querySelector('.lightbox__image'),
   buttonClose: document.querySelector('[data-action= close-lightbox]'),
 };
 
-console.log(refs.listGallery);
-// console.log(refs.divLightBox);
-// console.log(refs.divLightBoxOverlay);
-// console.log(refs.divLightBoxContent);
-// console.log(refs.imgLightbox);
-console.log(refs.buttonClose);
+const imageMarcup = listMarkupImage(linkImages);
 
-const listMarkup = listMarkupImage(linkImages);
+const galleryContainer = document.querySelector('.js-gallery');
+galleryContainer.insertAdjacentHTML('beforeend', imageMarcup);
+galleryContainer.addEventListener('click', onGalleryContainerClick);
 
-refs.listGallery.insertAdjacentHTML('beforeend', listMarkup);
-
-refs.listGallery.addEventListener('click', onListGalleryClick);
-
-refs.buttonClose.addEventListener('click', onButtonClose);
-
-function onListGalleryClick(event) {
-  if (event.target.nodeName !== 'IMG') {
-    return;
-  }
-
-  refs.divLightBox.classList.add('is-open');
-}
-
-function onButtonClose() {
-  const currentOpenButton = document.querySelector('.is-open');
-  if (currentOpenButton) {
-    currentOpenButton.classList.remove('is-open');
-  }
-}
+refs.buttonClose.addEventListener('click', removeClassModal);
 
 function listMarkupImage(linkImages) {
   return linkImages
@@ -47,7 +22,7 @@ function listMarkupImage(linkImages) {
       return `<li class="gallery__item">
   <a
     class="gallery__link"
-    href="#"
+    href="${original}"
   >
     <img
       class="gallery__image"
@@ -59,4 +34,43 @@ function listMarkupImage(linkImages) {
 </li> `;
     })
     .join('');
+}
+
+function onGalleryContainerClick(e) {
+  e.preventDefault();
+
+  const isGalleryImageElement = e.target.classList.contains('gallery__image');
+
+  if (!isGalleryImageElement) {
+    return;
+  }
+
+  const imageElement = e.target;
+  const imageLink = imageElement.dataset.source;
+  const imageAlt = imageElement.alt;
+
+  const imageOriginal = document.querySelector('.lightbox__image');
+  imageOriginal.src = `${imageLink}`;
+  imageOriginal.alt = `${imageAlt}`;
+
+  removeClassModal();
+  addClassOpenModal();
+}
+
+function removeClassModal() {
+  const currentActiveClassModal = document.querySelector(
+    '.js-lightbox.is-open',
+  );
+
+  if (currentActiveClassModal) {
+    currentActiveClassModal.classList.remove('is-open');
+
+    const imageOriginal = document.querySelector('.lightbox__image');
+    imageOriginal.src = '';
+    imageOriginal.alt = '';
+  }
+}
+
+function addClassOpenModal() {
+  refs.divModal.classList.add('is-open');
 }
