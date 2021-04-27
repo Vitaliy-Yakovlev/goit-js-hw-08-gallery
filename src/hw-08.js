@@ -3,7 +3,7 @@ import linkImages from './gallery-items.js';
 const refs = {
   ulGallery: document.querySelector('.js-gallery'),
   divModal: document.querySelector('.js-lightbox'),
-  divContent: document.querySelector('.lightbox__content'),
+  divOverlay: document.querySelector('.lightbox__overlay'),
   imgOriginal: document.querySelector('.lightbox__image'),
   buttonClose: document.querySelector('[data-action= close-lightbox]'),
 };
@@ -15,6 +15,10 @@ galleryContainer.insertAdjacentHTML('beforeend', imageMarcup);
 galleryContainer.addEventListener('click', onGalleryContainerClick);
 
 refs.buttonClose.addEventListener('click', removeClassModal);
+
+refs.divOverlay.addEventListener('click', onCloseMauseModal);
+
+window.addEventListener('keydown', onCloseKeyModal);
 
 function listMarkupImage(linkImages) {
   return linkImages
@@ -73,4 +77,16 @@ function removeClassModal() {
 
 function addClassOpenModal() {
   refs.divModal.classList.add('is-open');
+}
+
+function onCloseMauseModal(e) {
+  if (e.target === e.currentTarget) {
+    removeClassModal();
+  }
+}
+
+function onCloseKeyModal(e) {
+  if (e.key === 'Escape') {
+    removeClassModal();
+  }
 }
